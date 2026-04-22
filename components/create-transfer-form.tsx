@@ -9,11 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import {
   Plus,
   X,
-  Upload,
   Save,
   AlertCircle,
   Loader2,
@@ -201,32 +199,30 @@ export default function CreateTransferForm({
   const validItemsCount = items.filter((item) => item.product && item.quantity > 0).length
 
   return (
-    <div className="max-w-6xl mx-auto space-y-4">
+    <div className="max-w-6xl mx-auto space-y-2">
       {/* Header with Transfer ID and Save Button */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Package className="h-6 w-6 text-green-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Create Transfer</h1>
-          </div>
-          <Badge variant="outline" className="text-lg px-3 py-1">
+        <div className="flex items-center gap-3">
+          <Package className="h-5 w-5 text-green-600" />
+          <h1 className="text-2xl font-bold text-gray-900">Create Transfer</h1>
+          <Badge variant="outline" className="text-sm px-2 py-0.5">
             #{transferId}
           </Badge>
         </div>
         <Button
           onClick={handleSaveAndSubmit}
-          size="lg"
-          className="bg-slate-700 hover:bg-slate-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 min-w-[180px]"
+          size="sm"
+          className="bg-slate-700 hover:bg-slate-800 text-white shadow-md"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin mr-2" />
+              <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
               Saving...
             </>
           ) : (
             <>
-              <Save className="h-5 w-5 mr-2" />
+              <Save className="h-4 w-4 mr-1.5" />
               Save & Submit
             </>
           )}
@@ -235,515 +231,286 @@ export default function CreateTransferForm({
 
       {/* Validation Errors Alert */}
       {hasErrors && (
-        <Alert variant="destructive" className="border-red-200 bg-red-50">
-          <AlertCircle className="h-5 w-5" />
-          <AlertDescription className="text-red-800">
-            Please complete all required fields before submitting the transfer.
+        <Alert variant="destructive" className="border-red-200 bg-red-50 py-2">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-red-800 text-sm">
+            Please complete all required fields before submitting.
           </AlertDescription>
         </Alert>
       )}
 
       {/* Transfer Information */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-        <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-t-lg">
-          <CardTitle className="flex items-center space-x-2 text-xl">
-            <FileText className="h-6 w-6 text-green-600" />
-            <span>Transfer Information</span>
+      <Card className="shadow-md border-0">
+        <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-t-lg py-2 px-4">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <FileText className="h-4 w-4 text-green-400" />
+            <span>Transfer Details</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 space-y-4">
-          {/* Date and Movement Selection */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="transfer-date" className="text-sm font-semibold text-gray-700 flex items-center">
-                Transfer Date <span className="text-red-500 ml-1">*</span>
+        <CardContent className="p-3">
+          {/* All fields in a compact grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {/* Date */}
+            <div className="space-y-1">
+              <Label htmlFor="transfer-date" className="text-xs font-semibold text-gray-700 flex items-center">
+                Transfer Date <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 id="transfer-date"
                 type="date"
                 value={formData.transferDate}
                 onChange={(e) => updateFormData("transferDate", e.target.value)}
-                className="h-10 border-2 border-gray-400 bg-gray-50 shadow-sm focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
+                className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.transferDate ? "border-red-300" : "border-gray-300"}`}
               />
-              {validationErrors.transferDate && (
-                <p className="text-red-500 text-sm flex items-center mt-1">
-                  <AlertCircle className="h-4 w-4 mr-1" />
-                  {validationErrors.transferDate}
-                </p>
-              )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="movement-no" className="text-sm font-semibold text-gray-700">
-                Movement Number
+            {/* Movement Number */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700">Movement #</Label>
+              <Input value={transferId} readOnly className="h-8 text-sm border-2 border-gray-200 bg-gray-100 font-mono" />
+            </div>
+
+            {/* Ordered By */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700 flex items-center">
+                Ordered By <span className="text-red-500 ml-0.5">*</span>
+              </Label>
+              <Select value={formData.orderedBy} onValueChange={(value) => updateFormData("orderedBy", value)}>
+                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.orderedBy ? "border-red-300" : "border-gray-300"}`}>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {activePersonnel.map((person) => (
+                    <SelectItem key={person} value={person.toLowerCase().replace(/\s+/g, "-")}>{person}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Verified By */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700 flex items-center">
+                Verified By <span className="text-red-500 ml-0.5">*</span>
+              </Label>
+              <Select value={formData.verifiedBy} onValueChange={(value) => updateFormData("verifiedBy", value)}>
+                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.verifiedBy ? "border-red-300" : "border-gray-300"}`}>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {activePersonnel.map((person) => (
+                    <SelectItem key={person} value={person.toLowerCase().replace(/\s+/g, "-")}>{person}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Source Warehouse */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700 flex items-center">
+                Source <span className="text-red-500 ml-0.5">*</span>
+              </Label>
+              <Select value={formData.sourceWarehouse} onValueChange={(value) => updateFormData("sourceWarehouse", value)}>
+                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.sourceWarehouse ? "border-red-300" : "border-gray-300"}`}>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {activeWarehouses.map((warehouse) => (
+                    <SelectItem key={warehouse} value={warehouse.toLowerCase().replace(/\s+/g, "-")}>{warehouse}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Destination Warehouse */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700 flex items-center">
+                Destination <span className="text-red-500 ml-0.5">*</span>
+              </Label>
+              <Select value={formData.destinationWarehouse} onValueChange={(value) => updateFormData("destinationWarehouse", value)}>
+                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.destinationWarehouse ? "border-red-300" : "border-gray-300"}`}>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {activeWarehouses.map((warehouse) => (
+                    <SelectItem key={warehouse} value={warehouse.toLowerCase().replace(/\s+/g, "-")}>{warehouse}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Delivered By */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700 flex items-center">
+                <Truck className="h-3 w-3 mr-1" />
+                Delivered By <span className="text-red-500 ml-0.5">*</span>
+              </Label>
+              <Select value={formData.deliveredBy} onValueChange={(value) => updateFormData("deliveredBy", value)}>
+                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.deliveredBy ? "border-red-300" : "border-gray-300"}`}>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {activeDeliveryCompanies.map((company) => (
+                    <SelectItem key={company} value={company.toLowerCase().replace(/\s+/g, "-")}>{company}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Operator */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700 flex items-center">
+                Operator <span className="text-red-500 ml-0.5">*</span>
+              </Label>
+              <Select value={formData.operator} onValueChange={(value) => updateFormData("operator", value)}>
+                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.operator ? "border-red-300" : "border-gray-300"}`}>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {activeOperators.map((operator) => (
+                    <SelectItem key={operator} value={operator.toLowerCase().replace(/\s+/g, "-")}>{operator}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Well */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700 flex items-center">
+                Well <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
-                value={transferId}
-                readOnly
-                className="h-10 border-2 border-gray-300 bg-gray-100 font-mono shadow-sm"
+                placeholder="Enter well..."
+                value={formData.well}
+                onChange={(e) => updateFormData("well", e.target.value)}
+                className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.well ? "border-red-300" : "border-gray-300"}`}
+              />
+            </div>
+
+            {/* Forklift */}
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold text-gray-700">Forklift</Label>
+              <Select value={formData.forklift} onValueChange={(value) => updateFormData("forklift", value)}>
+                <SelectTrigger className="h-8 text-sm border-2 border-gray-300 bg-gray-50">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Yes</SelectItem>
+                  <SelectItem value="no">No</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Notes - spans 2 columns */}
+            <div className="space-y-1 col-span-2">
+              <Label className="text-xs font-semibold text-gray-700">Notes</Label>
+              <Textarea
+                placeholder="Additional notes..."
+                value={formData.notes}
+                onChange={(e) => updateFormData("notes", e.target.value)}
+                className="h-8 min-h-[32px] text-sm border-2 border-gray-300 bg-gray-50 resize-none"
               />
             </div>
           </div>
-
-          <Separator className="my-6" />
-
-          {/* Personnel Section */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <User className="h-5 w-5 mr-2 text-green-600" />
-              Personnel
-            </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center">
-                  Ordered By <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Select value={formData.orderedBy} onValueChange={(value) => updateFormData("orderedBy", value)}>
-                  <SelectTrigger
-                    className={`h-10 border-2 transition-colors shadow-sm bg-gray-50 ${
-                      validationErrors.orderedBy
-                        ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                        : "border-gray-400 focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
-                    }`}
-                  >
-                    <SelectValue placeholder="Select personnel..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {activePersonnel.map((person) => (
-                      <SelectItem key={person} value={person.toLowerCase().replace(/\s+/g, "-")}>
-                        {person}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {validationErrors.orderedBy && (
-                  <p className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {validationErrors.orderedBy}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center">
-                  Verified By <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Select value={formData.verifiedBy} onValueChange={(value) => updateFormData("verifiedBy", value)}>
-                  <SelectTrigger
-                    className={`h-10 border-2 transition-colors shadow-sm bg-gray-50 ${
-                      validationErrors.verifiedBy
-                        ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                        : "border-gray-400 focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
-                    }`}
-                  >
-                    <SelectValue placeholder="Select personnel..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {activePersonnel.map((person) => (
-                      <SelectItem key={person} value={person.toLowerCase().replace(/\s+/g, "-")}>
-                        {person}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {validationErrors.verifiedBy && (
-                  <p className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {validationErrors.verifiedBy}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <Separator className="my-6" />
-
-          {/* Location & Logistics Section */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <MapPin className="h-5 w-5 mr-2 text-green-600" />
-              Location & Logistics
-            </h3>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center">
-                  Source Warehouse <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Select
-                  value={formData.sourceWarehouse}
-                  onValueChange={(value) => updateFormData("sourceWarehouse", value)}
-                >
-                  <SelectTrigger
-                    className={`h-10 border-2 transition-colors shadow-sm bg-gray-50 ${
-                      validationErrors.sourceWarehouse
-                        ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                        : "border-gray-400 focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
-                    }`}
-                  >
-                    <SelectValue placeholder="Select source warehouse..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {activeWarehouses.map((warehouse) => (
-                      <SelectItem key={warehouse} value={warehouse.toLowerCase().replace(/\s+/g, "-")}>
-                        {warehouse}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {validationErrors.sourceWarehouse && (
-                  <p className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {validationErrors.sourceWarehouse}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center">
-                  Destination Warehouse <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Select
-                  value={formData.destinationWarehouse}
-                  onValueChange={(value) => updateFormData("destinationWarehouse", value)}
-                >
-                  <SelectTrigger
-                    className={`h-10 border-2 transition-colors shadow-sm bg-gray-50 ${
-                      validationErrors.destinationWarehouse
-                        ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                        : "border-gray-400 focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
-                    }`}
-                  >
-                    <SelectValue placeholder="Select destination warehouse..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {activeWarehouses.map((warehouse) => (
-                      <SelectItem key={warehouse} value={warehouse.toLowerCase().replace(/\s+/g, "-")}>
-                        {warehouse}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {validationErrors.destinationWarehouse && (
-                  <p className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {validationErrors.destinationWarehouse}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700">Forklift Required</Label>
-                <Select value={formData.forklift} onValueChange={(value) => updateFormData("forklift", value)}>
-                  <SelectTrigger className="border-2 border-gray-400 focus:border-slate-600 h-10 bg-gray-50 shadow-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center">
-                  <Truck className="h-4 w-4 mr-1" />
-                  Delivered By <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Select value={formData.deliveredBy} onValueChange={(value) => updateFormData("deliveredBy", value)}>
-                  <SelectTrigger
-                    className={`h-10 border-2 transition-colors shadow-sm bg-gray-50 ${
-                      validationErrors.deliveredBy
-                        ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                        : "border-gray-400 focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
-                    }`}
-                  >
-                    <SelectValue placeholder="Select delivery company..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {activeDeliveryCompanies.map((company) => (
-                      <SelectItem key={company} value={company.toLowerCase().replace(/\s+/g, "-")}>
-                        {company}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {validationErrors.deliveredBy && (
-                  <p className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {validationErrors.deliveredBy}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center">
-                  Operator <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Select value={formData.operator} onValueChange={(value) => updateFormData("operator", value)}>
-                  <SelectTrigger
-                    className={`h-10 border-2 transition-colors shadow-sm bg-gray-50 ${
-                      validationErrors.operator
-                        ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                        : "border-gray-400 focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
-                    }`}
-                  >
-                    <SelectValue placeholder="Select operator..." />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    {activeOperators.map((operator) => (
-                      <SelectItem key={operator} value={operator.toLowerCase().replace(/\s+/g, "-")}>
-                        {operator}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {validationErrors.operator && (
-                  <p className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {validationErrors.operator}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-gray-700 flex items-center">
-                  Well <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Input
-                  placeholder="Enter well number/name..."
-                  value={formData.well}
-                  onChange={(e) => updateFormData("well", e.target.value)}
-                  className={`h-10 border-2 transition-colors shadow-sm bg-gray-50 ${
-                    validationErrors.well
-                      ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                      : "border-gray-400 focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
-                  }`}
-                />
-                {validationErrors.well && (
-                  <p className="text-red-500 text-sm flex items-center mt-1">
-                    <AlertCircle className="h-4 w-4 mr-1" />
-                    {validationErrors.well}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <Separator className="my-6" />
         </CardContent>
       </Card>
 
-      {/* Items Section */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-        <CardHeader className="bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-t-lg">
+      {/* Items Section - Now directly below without extra spacing */}
+      <Card className="shadow-md border-0">
+        <CardHeader className="bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-t-lg py-2 px-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center space-x-2 text-xl">
-              <Package className="h-6 w-6 text-green-600" />
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Package className="h-4 w-4 text-green-400" />
               <span>Transfer Items</span>
-              <span className="text-green-200 ml-2">*</span>
             </CardTitle>
-            <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                {validItemsCount} valid items
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="bg-white/20 text-white border-white/30 text-xs">
+                {validItemsCount} items
               </Badge>
-              <Button
-                onClick={addItem}
-                size="sm"
-                className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add Item
+              <Button onClick={addItem} size="sm" className="bg-green-600 hover:bg-green-700 text-white h-7 text-xs">
+                <Plus className="h-3 w-3 mr-1" />
+                Add
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-4">
+        <CardContent className="p-3">
           {validationErrors.items && (
-            <Alert variant="destructive" className="mb-6 border-red-200 bg-red-50">
-              <AlertCircle className="h-5 w-5" />
-              <AlertDescription className="text-red-800">{validationErrors.items}</AlertDescription>
+            <Alert variant="destructive" className="mb-2 py-1.5 border-red-200 bg-red-50">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-red-800 text-xs">{validationErrors.items}</AlertDescription>
             </Alert>
           )}
 
-          <div className="space-y-3">
-            {/* Enhanced Table Header */}
-            <div className="grid grid-cols-12 gap-4 p-2 bg-gray-50 rounded-lg border-2 border-gray-200">
-              <div className="col-span-1 font-semibold text-gray-700 text-sm">ID</div>
-              <div className="col-span-3 font-semibold text-gray-700 text-sm">Product</div>
-              <div className="col-span-2 font-semibold text-gray-700 text-sm">Unit</div>
-              <div className="col-span-2 font-semibold text-gray-700 text-sm">Unit Weight</div>
-              <div className="col-span-2 font-semibold text-gray-700 text-sm">Quantity</div>
-              <div className="col-span-1 font-semibold text-gray-700 text-sm">Weight</div>
-              <div className="col-span-1 font-semibold text-gray-700 text-sm">Actions</div>
+          <div className="space-y-1.5">
+            {/* Table Header */}
+            <div className="grid grid-cols-12 gap-2 px-2 py-1 bg-gray-100 rounded text-xs font-semibold text-gray-700">
+              <div className="col-span-1">ID</div>
+              <div className="col-span-4">Product</div>
+              <div className="col-span-2">Unit</div>
+              <div className="col-span-1">Wt/Unit</div>
+              <div className="col-span-2">Qty</div>
+              <div className="col-span-1">Total Wt</div>
+              <div className="col-span-1"></div>
             </div>
 
-            {/* Items */}
-            {items.map((item, index) => (
-              <div
-                key={item.id}
-                className="grid grid-cols-12 gap-4 p-4 bg-white rounded-lg border-2 border-gray-100 hover:border-blue-200 transition-colors"
-              >
+            {/* Items - Compact rows */}
+            {items.map((item) => (
+              <div key={item.id} className="grid grid-cols-12 gap-2 p-2 bg-white rounded border border-gray-100 hover:border-green-200 items-center">
                 <div className="col-span-1">
-                  <Input
-                    value={item.productId}
-                    readOnly
-                    className="bg-gray-200 text-sm font-mono border-0 shadow-none rounded-md"
-                    placeholder="Auto"
-                  />
+                  <Input value={item.productId} readOnly className="h-7 text-xs border border-gray-200 bg-gray-50 text-center" />
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-4">
                   <Select value={item.product} onValueChange={(value) => updateItem(item.id, "product", value)}>
-                    <SelectTrigger className="border-2 border-gray-400 focus:border-slate-600 h-9 bg-gray-50 shadow-sm">
+                    <SelectTrigger className="h-7 text-xs border border-gray-200 bg-gray-50">
                       <SelectValue placeholder="Select product..." />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
                       {activeProducts.map((product) => (
-                        <SelectItem key={product} value={product.toLowerCase().replace(/\s+/g, "-")}>
-                          {product}
-                        </SelectItem>
+                        <SelectItem key={product} value={product.toLowerCase().replace(/\s+/g, "-")} className="text-xs">{product}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="col-span-2">
-                  <Input
-                    value={item.unit}
-                    readOnly
-                    className="bg-gray-200 text-sm font-mono border-0 shadow-none rounded-md"
-                    placeholder="Auto-filled"
-                  />
+                  <Input value={item.unit} readOnly className="h-7 text-xs border border-gray-200 bg-gray-50 text-center" />
+                </div>
+                <div className="col-span-1">
+                  <Input value={item.unitWeight.toLocaleString()} readOnly className="h-7 text-xs border border-gray-200 bg-gray-50 text-center" />
                 </div>
                 <div className="col-span-2">
                   <Input
                     type="number"
-                    value={item.unitWeight || ""}
-                    readOnly
-                    className="bg-gray-200 text-sm font-mono border-0 shadow-none rounded-md"
-                    placeholder="0.00"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <Input
-                    type="number"
-                    placeholder="Enter quantity..."
+                    min="0"
                     value={item.quantity || ""}
                     onChange={(e) => updateItem(item.id, "quantity", Number(e.target.value))}
-                    className="h-10 border-2 border-gray-400 bg-gray-50 shadow-sm focus:border-slate-600 focus:ring-1 focus:ring-slate-500"
+                    className="h-7 text-xs border border-gray-200 bg-white text-center"
+                    placeholder="0"
                   />
                 </div>
                 <div className="col-span-1">
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    value={item.itemWeight || ""}
-                    readOnly
-                    className="bg-gray-200 text-sm font-mono border-0 shadow-none rounded-md"
-                  />
+                  <Input value={item.itemWeight.toLocaleString()} readOnly className="h-7 text-xs border border-gray-200 bg-gray-50 text-center font-medium" />
                 </div>
                 <div className="col-span-1 flex justify-center">
                   {items.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeItem(item.id)}
-                      className="text-red-600 hover:text-red-800 hover:bg-red-50 h-9 w-9"
-                    >
-                      <X className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)} className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50">
+                      <X className="h-3 w-3" />
                     </Button>
                   )}
                 </div>
               </div>
             ))}
 
-            {/* Weight Summary */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-6 border-2 border-green-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Calculator className="h-5 w-5 text-green-600" />
-                  <h3 className="text-lg font-semibold text-green-800">Weight Summary</h3>
-                </div>
-                <div className="text-right space-y-1">
-                  <div className="flex justify-between items-center space-x-8">
-                    <span className="text-sm text-green-700">Product Weight:</span>
-                    <span className="font-mono font-semibold text-green-800">
-                      {calculateTotalWeight().toFixed(2)} lbs
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center space-x-8">
-                    <span className="text-sm text-green-700">Equipment Weight:</span>
-                    <span className="font-mono font-semibold text-green-800">0.00 lbs</span>
-                  </div>
-                  <Separator className="my-2 bg-green-300" />
-                  <div className="flex justify-between items-center space-x-8">
-                    <span className="font-semibold text-green-800">Final Weight:</span>
-                    <span className="font-mono font-bold text-xl text-green-900">
-                      {calculateTotalWeight().toFixed(2)} lbs
-                    </span>
-                  </div>
-                </div>
+            {/* Total Weight Footer */}
+            <div className="flex justify-end pt-2 border-t border-gray-200">
+              <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded">
+                <Calculator className="h-4 w-4 text-slate-600" />
+                <span className="text-sm font-semibold text-slate-700">Total Weight:</span>
+                <span className="text-sm font-bold text-slate-900">{calculateTotalWeight().toLocaleString()} lbs</span>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Notes & Attachments Section */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
-        <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-t-lg">
-          <CardTitle className="flex items-center space-x-2 text-xl">
-            <FileText className="h-6 w-6 text-green-600" />
-            <span>Notes & Attachments</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-3">
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">Additional Notes</Label>
-            <Textarea
-              placeholder="Enter any additional notes, special instructions, or comments..."
-              value={formData.notes}
-              onChange={(e) => updateFormData("notes", e.target.value)}
-              className="min-h-[120px] border-2 border-gray-400 bg-gray-50 shadow-sm focus:border-slate-600 focus:ring-1 focus:ring-slate-500 resize-none"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">File Attachments</Label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-400 transition-colors">
-              <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-              <div className="space-y-1">
-                <Button variant="outline" className="border-green-200 text-green-700 hover:bg-green-50">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Choose Files
-                </Button>
-                <p className="text-sm text-gray-500">or drag and drop files here</p>
-                <p className="text-xs text-gray-400">PDF, DOC, XLS, JPG, PNG (Max 10MB)</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Final Submit Button */}
-      <div className="flex justify-center pb-4">
-        <Button
-          onClick={handleSaveAndSubmit}
-          size="lg"
-          className="bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white shadow-xl hover:shadow-2xl transition-all duration-300 min-w-[250px] h-14 text-lg font-semibold"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="h-6 w-6 animate-spin mr-3" />
-              Processing Transfer...
-            </>
-          ) : (
-            <>
-              <Save className="h-6 w-6 mr-3" />
-              Save & Submit Transfer
-            </>
-          )}
-        </Button>
-      </div>
     </div>
   )
 }
