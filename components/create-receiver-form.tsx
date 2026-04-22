@@ -253,121 +253,150 @@ export default function CreateReceiverForm({
             <span>Receipt Details</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-3">
-          {/* All fields in a compact grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {/* Receipt Date */}
-            <div className="space-y-1">
-              <Label htmlFor="receipt-date" className="text-xs font-semibold text-gray-700 flex items-center">
-                Receipt Date <span className="text-red-500 ml-0.5">*</span>
-              </Label>
-              <Input
-                id="receipt-date"
-                type="date"
-                value={formData.receiptDate}
-                onChange={(e) => updateFormData("receiptDate", e.target.value)}
-                className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.receiptDate ? "border-red-300" : "border-gray-300"}`}
-              />
+        <CardContent className="p-4">
+          <div className="flex gap-8">
+            {/* Left side - Stacked form fields */}
+            <div className="w-1/2 space-y-3">
+              {/* Receipt Date */}
+              <div className="flex items-center">
+                <Label htmlFor="receipt-date" className="text-sm text-gray-600 w-36 shrink-0">
+                  Receipt Date<span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="receipt-date"
+                  type="date"
+                  value={formData.receiptDate}
+                  onChange={(e) => updateFormData("receiptDate", e.target.value)}
+                  className={`h-9 text-sm border bg-white flex-1 ${validationErrors.receiptDate ? "border-red-300" : "border-gray-300"}`}
+                />
+              </div>
+
+              {/* Movement Number */}
+              <div className="flex items-center">
+                <Label className="text-sm text-gray-600 w-36 shrink-0">Movement #</Label>
+                <Input value={movementId} readOnly className="h-9 text-sm border border-gray-300 bg-gray-100 font-mono flex-1" />
+              </div>
+
+              {/* Vendor */}
+              <div className="flex items-center">
+                <Label className="text-sm text-gray-600 w-36 shrink-0 flex items-center">
+                  <Building className="h-4 w-4 mr-1.5 text-gray-500" />
+                  Vendor<span className="text-red-500">*</span>
+                </Label>
+                <Select value={formData.vendor} onValueChange={(value) => updateFormData("vendor", value)}>
+                  <SelectTrigger className={`h-9 text-sm border bg-white flex-1 ${validationErrors.vendor ? "border-red-300" : "border-gray-300"}`}>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vendors.map((vendor) => (
+                      <SelectItem key={vendor} value={vendor.toLowerCase().replace(/\s+/g, "-")}>{vendor}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* BOL */}
+              <div className="flex items-center">
+                <Label className="text-sm text-gray-600 w-36 shrink-0">BOL</Label>
+                <Input
+                  placeholder="BOL number..."
+                  value={formData.bol}
+                  onChange={(e) => updateFormData("bol", e.target.value)}
+                  className="h-9 text-sm border border-gray-300 bg-white flex-1"
+                />
+              </div>
+
+              {/* Destination Warehouse */}
+              <div className="flex items-center">
+                <Label className="text-sm text-gray-600 w-36 shrink-0 flex items-center">
+                  <MapPin className="h-4 w-4 mr-1.5 text-gray-500" />
+                  Destination<span className="text-red-500">*</span>
+                </Label>
+                <Select value={formData.destinationWarehouse} onValueChange={(value) => updateFormData("destinationWarehouse", value)}>
+                  <SelectTrigger className={`h-9 text-sm border bg-white flex-1 ${validationErrors.destinationWarehouse ? "border-red-300" : "border-gray-300"}`}>
+                    <SelectValue placeholder="Select destination" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeWarehouses.map((warehouse) => (
+                      <SelectItem key={warehouse} value={warehouse.toLowerCase().replace(/\s+/g, "-")}>{warehouse}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Delivered By */}
+              <div className="flex items-center">
+                <Label className="text-sm text-gray-600 w-36 shrink-0 flex items-center">
+                  <Truck className="h-4 w-4 mr-1.5 text-gray-500" />
+                  Delivered By<span className="text-red-500">*</span>
+                </Label>
+                <Select value={formData.deliveredBy} onValueChange={(value) => updateFormData("deliveredBy", value)}>
+                  <SelectTrigger className={`h-9 text-sm border bg-white flex-1 ${validationErrors.deliveredBy ? "border-red-300" : "border-gray-300"}`}>
+                    <SelectValue placeholder="Select delivery company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeDeliveryCompanies.map((company) => (
+                      <SelectItem key={company} value={company.toLowerCase().replace(/\s+/g, "-")}>{company}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Verified By */}
+              <div className="flex items-center">
+                <Label className="text-sm text-gray-600 w-36 shrink-0 flex items-center">
+                  <User className="h-4 w-4 mr-1.5 text-gray-500" />
+                  Verified By<span className="text-red-500">*</span>
+                </Label>
+                <Select value={formData.verifiedBy} onValueChange={(value) => updateFormData("verifiedBy", value)}>
+                  <SelectTrigger className={`h-9 text-sm border bg-white flex-1 ${validationErrors.verifiedBy ? "border-red-300" : "border-gray-300"}`}>
+                    <SelectValue placeholder="Select personnel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activePersonnel.map((person) => (
+                      <SelectItem key={person} value={person.toLowerCase().replace(/\s+/g, "-")}>{person}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Notes */}
+              <div className="flex items-start">
+                <Label className="text-sm text-gray-600 w-36 shrink-0 pt-2">Notes</Label>
+                <Textarea
+                  placeholder="Additional notes..."
+                  value={formData.notes}
+                  onChange={(e) => updateFormData("notes", e.target.value)}
+                  className="min-h-[60px] text-sm border border-gray-300 bg-white flex-1 resize-none"
+                />
+              </div>
             </div>
 
-            {/* Movement Number */}
-            <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-700">Movement #</Label>
-              <Input value={movementId} readOnly className="h-8 text-sm border-2 border-gray-200 bg-gray-100 font-mono" />
-            </div>
-
-            {/* Vendor */}
-            <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-700 flex items-center">
-                <Building className="h-3 w-3 mr-1" />
-                Vendor <span className="text-red-500 ml-0.5">*</span>
-              </Label>
-              <Select value={formData.vendor} onValueChange={(value) => updateFormData("vendor", value)}>
-                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.vendor ? "border-red-300" : "border-gray-300"}`}>
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {vendors.map((vendor) => (
-                    <SelectItem key={vendor} value={vendor.toLowerCase().replace(/\s+/g, "-")}>{vendor}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* BOL */}
-            <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-700">BOL</Label>
-              <Input
-                placeholder="BOL number..."
-                value={formData.bol}
-                onChange={(e) => updateFormData("bol", e.target.value)}
-                className="h-8 text-sm border-2 border-gray-300 bg-gray-50"
-              />
-            </div>
-
-            {/* Destination Warehouse */}
-            <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-700 flex items-center">
-                <MapPin className="h-3 w-3 mr-1" />
-                Destination <span className="text-red-500 ml-0.5">*</span>
-              </Label>
-              <Select value={formData.destinationWarehouse} onValueChange={(value) => updateFormData("destinationWarehouse", value)}>
-                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.destinationWarehouse ? "border-red-300" : "border-gray-300"}`}>
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {activeWarehouses.map((warehouse) => (
-                    <SelectItem key={warehouse} value={warehouse.toLowerCase().replace(/\s+/g, "-")}>{warehouse}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Delivered By */}
-            <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-700 flex items-center">
-                <Truck className="h-3 w-3 mr-1" />
-                Delivered By <span className="text-red-500 ml-0.5">*</span>
-              </Label>
-              <Select value={formData.deliveredBy} onValueChange={(value) => updateFormData("deliveredBy", value)}>
-                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.deliveredBy ? "border-red-300" : "border-gray-300"}`}>
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {activeDeliveryCompanies.map((company) => (
-                    <SelectItem key={company} value={company.toLowerCase().replace(/\s+/g, "-")}>{company}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Verified By */}
-            <div className="space-y-1">
-              <Label className="text-xs font-semibold text-gray-700 flex items-center">
-                <User className="h-3 w-3 mr-1" />
-                Verified By <span className="text-red-500 ml-0.5">*</span>
-              </Label>
-              <Select value={formData.verifiedBy} onValueChange={(value) => updateFormData("verifiedBy", value)}>
-                <SelectTrigger className={`h-8 text-sm border-2 bg-gray-50 ${validationErrors.verifiedBy ? "border-red-300" : "border-gray-300"}`}>
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {activePersonnel.map((person) => (
-                    <SelectItem key={person} value={person.toLowerCase().replace(/\s+/g, "-")}>{person}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Notes - spans remaining columns */}
-            <div className="space-y-1 col-span-2 md:col-span-3 lg:col-span-5">
-              <Label className="text-xs font-semibold text-gray-700">Notes</Label>
-              <Textarea
-                placeholder="Additional notes..."
-                value={formData.notes}
-                onChange={(e) => updateFormData("notes", e.target.value)}
-                className="h-8 min-h-[32px] text-sm border-2 border-gray-300 bg-gray-50 resize-none"
-              />
+            {/* Right side - Items Preview */}
+            <div className="w-1/2 bg-gray-50 rounded-lg border border-gray-200 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                  <Package className="h-4 w-4 text-blue-600" />
+                  Items Preview
+                </h3>
+                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                  {validItemsCount} items
+                </Badge>
+              </div>
+              <div className="space-y-1.5 max-h-[220px] overflow-y-auto">
+                {items.filter(item => item.product).length === 0 ? (
+                  <p className="text-sm text-gray-400 italic py-4 text-center">No items added yet</p>
+                ) : (
+                  items.filter(item => item.product).map((item) => (
+                    <div key={item.id} className="flex items-center gap-3 bg-white rounded px-3 py-2 border border-gray-100">
+                      <span className="text-xs font-mono text-gray-500 w-12">{item.productId}</span>
+                      <span className="text-sm text-gray-800 flex-1 truncate">
+                        {activeProducts.find(p => p.toLowerCase().replace(/\s+/g, "-") === item.product) || item.product}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </CardContent>
