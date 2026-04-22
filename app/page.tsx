@@ -59,7 +59,7 @@ export default function MainPage() {
             {/* Logo and Navigation */}
             <div className="flex items-center space-x-8">
               <div className="flex items-center">
-                <span className="text-2xl font-bold text-slate-700">GEO</span>
+                <span className="text-2xl font-bold text-green-600">GEO</span>
                 <span className="text-sm text-gray-500 ml-1">Drilling Fluids, Inc.</span>
               </div>
 
